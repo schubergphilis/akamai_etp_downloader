@@ -16,6 +16,7 @@ Prior to running the script, the following environment variables need to be set:
   ETP_CLIENT_SECRET     Akamai ETP Client Secret
 ```
 
+Using the Akamai ETP downloader:
 ```sh
 $ ./etp_downloader.py -h
 usage: etp_downloader.py [-h] -s SERVER [-r READ_FILE] [-l LOG_FILE] [-D]
