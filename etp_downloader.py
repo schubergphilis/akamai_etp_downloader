@@ -70,7 +70,7 @@ def get_timestamp_of_previous_run():
             if not(os.path.isdir(path)) and path.endswith(".csv"):
                 files.append(e)
         sorted_files = sorted(files)
-        if(len(sorted_files) > 1):
+        if(len(sorted_files) > 0):
             return sorted_files[len(sorted_files)-1].split('_')[1].split('.')[0]
     return get_default_start_time()
 
@@ -86,8 +86,9 @@ def fetch_threat_events_in_period(caller, configuration_id, start, end):
     else:
         with open(args.read_file) as f:
             events_result = json.load(f)
-    csv = convert_to_csv(events_result)
-    saveCsvToFile(csv, end)
+    if(len(events_result) > 0 ):
+        csv = convert_to_csv(events_result)
+        saveCsvToFile(csv, end)
 
 def saveCsvToFile(csv, timestamp):
     full_filename = os.path.join(args.download_folder, "etp_"+str(timestamp)+".csv")
@@ -97,12 +98,12 @@ def saveCsvToFile(csv, timestamp):
 
 def convert_to_csv(etp_reports):
     header = ""
-    #header =  "policyName,confidenceId,categoryName,actionName,listName,siteName,description,"
-    #header += "confidenceName,listId,reason,trigger,siteId,"
-    #header += "policyId,detectionTime,detectionType,categoryId,actionId,configId,"
-    #header += "asname,type,response,asn,deviceName,domain,uuid,time,deviceId,dnsIp,clientIp,queryType,id,l7Protocol"
+    header =  "policyName,confidenceId,categoryName,actionName,listName,siteName,description,"
+    header += "confidenceName,listId,reason,trigger,siteId,"
+    header += "policyId,detectionTime,detectionType,categoryId,actionId,configId,"
+    header += "asname,type,response,asn,deviceName,domain,uuid,time,deviceId,dnsIp,clientIp,queryType,id,l7Protocol"
 
-    rows = header
+    rows = ""
     for r in etp_reports:
         flat = flatten_json(r)
         n = json_normalize(flat)
@@ -142,7 +143,7 @@ def convert_to_csv(etp_reports):
         row += dict['l7Protocol'] + ","
         rows = rows + "\n" + row
 
-    return rows
+    return header + "\n" + rows
 
 def get_configuration_id(caller):
     return caller.getResult('/etp-config/v1/configs')[0]
