@@ -154,5 +154,5 @@ if __name__ == "__main__":
     caller = create_caller()
     configuration_id = get_configuration_id(caller)
     timestamp_previous_run = get_timestamp_of_previous_run()
-    fetch_threat_events_in_period(caller, configuration_id, timestamp_previous_run, int(time.time()))
+    fetch_threat_events_in_period(caller, configuration_id, timestamp_previous_run - 1, int(time.time()))
     exit(0)
