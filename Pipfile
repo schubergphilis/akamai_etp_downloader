@@ -1,0 +1,10 @@
+[[source]]
+url = "https://pypi.python.org/simple/"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flatten_json = ">= 0.1.6"
+pandas = ">= 0.23.1"
+edgegrid-python = ">= 1.1.0"
+httpie-edgegrid = ">= 1.0.6"
