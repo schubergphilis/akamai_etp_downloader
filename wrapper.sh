@@ -1,4 +1,6 @@
 #!/bin/bash
+echo 'Python version: '
+python --version
 [ ! -x ~/.local/bin/pipenv ] && pip install --user pipenv;
 ~/.local/bin/pipenv install
 cd $1
