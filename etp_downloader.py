@@ -71,7 +71,7 @@ def get_timestamp_of_previous_run():
                 files.append(e)
         sorted_files = sorted(files)
         if(len(sorted_files) > 0):
-            return sorted_files[len(sorted_files)-1].split('_')[1].split('.')[0]
+            return int(sorted_files[len(sorted_files)-1].split('_')[1].split('.')[0])
     return get_default_start_time()
 
 def get_default_start_time():
