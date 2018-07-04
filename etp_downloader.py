@@ -140,7 +140,7 @@ def convert_to_csv(etp_reports):
         row += dict['query_clientIp'] + ","
         row += dict['query_queryType'] + ","
         row += dict['id'] + ","
-        row += dict['l7Protocol'] + ","
+        row += dict['l7Protocol']
         rows = rows + "\n" + row
 
     return header + "\n" + rows
