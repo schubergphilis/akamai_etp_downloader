@@ -143,7 +143,7 @@ def convert_to_csv(etp_reports):
         row += dict['l7Protocol']
         rows = rows + "\n" + row
 
-    return header + "\n" + rows
+    return header + rows
 
 def get_configuration_id(caller):
     return caller.getResult('/etp-config/v1/configs')[0]
