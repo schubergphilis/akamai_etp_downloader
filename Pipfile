@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+requests = ">= 2.6.0"
 flatten_json = ">= 0.1.6"
 pandas = ">= 0.23.1"
 edgegrid-python = ">= 1.1.0"
