@@ -105,7 +105,14 @@ def convert_to_csv(etp_reports):
 
     rows = ""
     for r in etp_reports:
-        flat = flatten_json(r)
+        flat = None
+        try:
+            flat = flatten_json(r)
+        except AssertionError as e:
+            msg = "JSON flattening error({0}): {1}\nJSON content: {2}".format(e.errno, e.strerror, json.dumps(r))
+            logger.error(msg)
+            exit(1)
+
         n = json_normalize(flat)
 
         dict = n.iloc[0].to_dict()
