@@ -109,7 +109,7 @@ def convert_to_csv(etp_reports):
         try:
             flat = flatten_json(r)
         except AssertionError as e:
-            msg = "JSON flattening error({0}): {1}\nJSON content: {2}".format(e.errno, e.strerror, json.dumps(r))
+            msg = "JSON flattening error({0})\nJSON content: {2}".format(str(e.args), json.dumps(r))
             logger.error(msg)
             exit(1)
 
