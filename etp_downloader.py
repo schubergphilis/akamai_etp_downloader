@@ -91,8 +91,13 @@ def get_default_start_time():
 def fetch_threat_events_in_period(session, configuration_id, start, end):
     events_result = None
     if not(args.read_file):
-        u = create_url('/etp-report/v1/configs/%s/threat-events/details?startTimeSec=%s&endTimeSec=%s' % (configuration_id, start, end))
-        events_result = session.get(u).json()
+        response = None
+        try:
+           u = create_url('/etp-report/v1/configs/%s/threat-events/details?startTimeSec=%s&endTimeSec=%s' % (configuration_id, start, end))
+           response = session.get(u)
+           events_result = response.json()
+        except:
+            logger.error(response)
     else:
         with open(args.read_file) as f:
             events_result = json.load(f)
@@ -164,10 +169,13 @@ def convert_to_csv(etp_reports):
 
 def get_configuration_id(session):
     u = create_url('/etp-config/v1/configs')
-    print session.auth
-    response = session.get(u)
-    print response.request.headers
-    return response.json()[0]
+    response = None
+    try: 
+        response = session.get(u)
+        return response.json()[0]
+    except:
+        logger.error(response.text)
+        exit(1)
 
 if __name__ == "__main__":
     session = create_session()
