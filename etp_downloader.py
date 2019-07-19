@@ -14,6 +14,8 @@ from logging.handlers import RotatingFileHandler
 import time
 from flatten_json import flatten_json
 from pandas.io.json import json_normalize
+from urlparse import urlparse
+from urlparse import urljoin
 
 session = requests.Session()
 
@@ -49,17 +51,24 @@ else:
 # Log the command line options
 logger.debug(args)
 
-def create_caller():
+def create_session():
+    session = requests.Session()
     # Set the config options
     session.auth = EdgeGridAuth(
         client_token=os.environ['ETP_CLIENT_TOKEN'].strip(),
         client_secret=os.environ['ETP_CLIENT_SECRET'].strip(),
         access_token=os.environ['ETP_ACCESS_TOKEN'].strip()
     )
+    return session
+    # baseurl = '%s://%s/' % ('https', args.server.strip())
+    # httpCaller = EdgeGridHttpCaller(session, baseurl, args.debug)
+    # return httpCaller
 
+def create_url(path):
     baseurl = '%s://%s/' % ('https', args.server.strip())
-    httpCaller = EdgeGridHttpCaller(session, baseurl, args.debug)
-    return httpCaller
+    join = urljoin(baseurl, path)
+    return join
+
 
 def get_timestamp_of_previous_run():
     if(os.path.isdir(args.download_folder)):
@@ -79,10 +88,11 @@ def get_default_start_time():
     ts = int(math.floor((dt - datetime.datetime(1970, 1, 1)).total_seconds()))
     return ts
 
-def fetch_threat_events_in_period(caller, configuration_id, start, end):
+def fetch_threat_events_in_period(session, configuration_id, start, end):
     events_result = None
     if not(args.read_file):
-        events_result = caller.getResult('/etp-report/v1/configs/%s/threat-events/details?startTimeSec=%s&endTimeSec=%s' % (configuration_id, start, end))
+        u = create_url('/etp-report/v1/configs/%s/threat-events/details?startTimeSec=%s&endTimeSec=%s' % (configuration_id, start, end))
+        events_result = session.get(u).json()
     else:
         with open(args.read_file) as f:
             events_result = json.load(f)
@@ -152,14 +162,16 @@ def convert_to_csv(etp_reports):
 
     return header + rows
 
-def get_configuration_id(caller):
-    return caller.getResult('/etp-config/v1/configs')[0]
-
-
+def get_configuration_id(session):
+    u = create_url('/etp-config/v1/configs')
+    print session.auth
+    response = session.get(u)
+    print response.request.headers
+    return response.json()[0]
 
 if __name__ == "__main__":
-    caller = create_caller()
-    configuration_id = get_configuration_id(caller)
+    session = create_session()
+    configuration_id = get_configuration_id(session)
     timestamp_previous_run = get_timestamp_of_previous_run()
-    fetch_threat_events_in_period(caller, configuration_id, timestamp_previous_run - 1, int(time.time()))
+    fetch_threat_events_in_period(session, configuration_id, timestamp_previous_run - 1, int(time.time()))
     exit(0)
